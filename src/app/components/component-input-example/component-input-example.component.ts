@@ -11,7 +11,7 @@ import { PersonTableComponent } from '../person-table/person-table.component';
 export class ComponentInputExampleComponent {
   person0: Person = {
     givenName: "Christodoulos",
-    surname: "Fragkoudakis",
+    surName: "Fragkoudakis",
     age: 55,
     email: "chfrag@aueb.gr",
     address: "New York, USA"
@@ -19,7 +19,7 @@ export class ComponentInputExampleComponent {
 
   person1: Person = {
     givenName: "John",
-    surname: "Doe",
+    surName: "Doe",
     age: 45,
     email: "john@aueb.gr",
     address: "Athens Greece"
