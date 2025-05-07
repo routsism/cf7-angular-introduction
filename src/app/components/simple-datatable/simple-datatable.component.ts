@@ -1,7 +1,8 @@
-import { Component, EventEmitter, Input, Output, effect, inject } from '@angular/core';
+import { Component, EventEmitter, Input, Output, SimpleChanges, effect, inject } from '@angular/core';
 import { EPerson } from 'src/app/shared/interfaces/eperson';
 import { sortBy } from 'lodash-es';
-import { PersonService } from 'src/app/shared/services/person.service';
+import { Person } from 'src/app/shared/interfaces/person';
+// import { PersonService } from 'src/app/shared/services/person.service';
 
 @Component({
   selector: 'app-simple-datatable',
@@ -11,21 +12,33 @@ import { PersonService } from 'src/app/shared/services/person.service';
 })
 export class SimpleDatatableComponent {
  @Input() data : EPerson[] | undefined;
+ @Input() myData: boolean = true;
  @Output() personClicked = new EventEmitter<EPerson>()
 
-personService = inject(PersonService);
+// personService = inject(PersonService);
 
- epersonsData: EPerson[] | undefined = [];
+ epersonsData: EPerson[] = [];
 
- constructor() {
-  effect(() => {
-    if(this.personService.modifiedDataTable()) {
-      console.log("SIGNAL",this.data);
-      this.epersonsData = this.data;
-    }
-    this.personService.modifiedDataTable.set(false);
-  })
+ ngOnChanges(changes: SimpleChanges) {
+  if (changes['data'] && this.data) {
+  console.log("ngOnChanges", this.data);
+  this.epersonsData = this.data
+  }
+  if (changes['myData']){
+    console.log("MyData")
+    // this.myFunction();
+  }
  }
+
+//  constructor() {
+//   effect(() => {
+//     if(this.personService.modifiedDataTable()) {
+//       console.log("SIGNAL",this.data);
+//       this.epersonsData = this.data;
+//     }
+//     this.personService.modifiedDataTable.set(false);
+//   })
+//  }
 
  sortOrder = {
   givenName: 'none',
@@ -40,7 +53,8 @@ personService = inject(PersonService);
 
  sortData(sortKey: keyof EPerson): void {
   // console.log(sortKey);
-  this.epersonsData = this.data;
+  // this.epersonsData = this.data;
+
  
   
   if (this.sortOrder[sortKey] === 'asc') {
