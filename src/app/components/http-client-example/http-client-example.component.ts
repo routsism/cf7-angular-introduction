@@ -16,17 +16,19 @@ export class HttpClientExampleComponent implements OnInit {
   chuckNorrisJoke: string = '';
 
   ngOnInit(): void {
-    this.jokesService.getDadJokes()
-    .subscribe((data) => {
-      console.log("DAD JOKE", data);
-      console.log("Dad Joke", data.joke);
-    });
+    // this.jokesService.getDadJokes()
+    // .subscribe((data) => {
+    //   console.log("DAD JOKE", data);
+    //   console.log("Dad Joke", data.joke);
+    // });
 
-    this.jokesService.getChuckNorrisJoke()
-    .subscribe((data) => {
-      console.log("CHUCK NORRIS", data);
-      console.log("Chuck Joke", data.value);
-    });
+    // this.jokesService.getChuckNorrisJoke()
+    // .subscribe((data) => {
+    //   console.log("CHUCK NORRIS", data);
+    //   console.log("Chuck Joke", data.value);
+    // });
+    this.refreshChuckNorrisJoke();
+    this.refreshDadJoke();
   }
 
   refreshDadJoke() {
