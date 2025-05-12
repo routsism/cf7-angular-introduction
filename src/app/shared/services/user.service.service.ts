@@ -16,5 +16,11 @@ export class UserServiceService {
 
   }
 
+  check_dublicate_email(email: string) {
+    return this.http.get<{status: boolean, data: User}>(
+      `${API_URL}/check_dublicate_email/${email}`
+    )
+  }
+
   
 }
