@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,7 +9,8 @@ import {
   ReactiveFormsModule, 
   Validators 
 } from '@angular/forms';
-import { UserServiceService } from 'src/app/shared/services/user.service.service';
+import { UserService } from 'src/app/shared/services/user.service';
+import { User } from 'src/app/shared/interfaces/user';
 
 @Component({
   selector: 'app-user-registration',
@@ -23,7 +24,14 @@ import { UserServiceService } from 'src/app/shared/services/user.service.service
   styleUrl: './user-registration.component.css'
 })
 export class UserRegistrationComponent {
-  userService = inject(UserServiceService)
+  userService = inject(UserService)
+
+  emailErrorMessage = signal('');
+
+  registrationStatus: {success: boolean, message: string} = {
+    success: false,
+    message: 'Not attempted yet'
+  }
 
   form = new FormGroup({
     username: new FormControl('', Validators.required),
@@ -55,27 +63,65 @@ export class UserRegistrationComponent {
   }
 
   onSubmit(){
-    const data = this.form.value;
+    // const data = this.form.value as User;
+    const data: User = {
+      'username': this.form.get('username')?.value || '',
+      'password': this.form.get('password')?.value || '',
+      'name': this.form.get('name')?.value || '',
+      'surname': this.form.get('surname')?.value || '',
+      'email':this.form.get('email')?.value || '',
+      'address': {
+        'area':this.form.get('area')?.value || '',
+        'road': this.form.get('road')?.value || ''
+      }
+    }
     console.log(data);
+    this.userService.registerUser(data)
+      .subscribe({
+        next: (response) => {
+          console.log("User Saved", response);
+          this.registrationStatus = {success: true, message: "User registrered"}
+        },
+        error: (response) => {
+          console.log("User not Saved", response)
+          this.registrationStatus = {success: false, message: response.data}
+        }
+      })
+    
   }
 
-  check_dublicate_email() {
-    const email =  this.form.get('email')?.value;
+  check_dublicate_email(){
+    const email = this.form.get("email")?.value;
 
-    if (email) {
+    if (this.form.controls.email.hasError('required')){
+      this.emailErrorMessage.set('Email is required')
+    } else if (this.form.controls.email.hasError('email')){
+      this.emailErrorMessage.set('Email not valid')
+    }
+
+    if (email){
+      console.log("email", email);
       this.userService.check_dublicate_email(email)
         .subscribe({
           next: (response) => {
-            console.log(response);
-            this.form.get('email')?.setErrors(null)
+            console.log("Email OK",response);
+            // this.form.get("email")?.setErrors(null)
+            // this.emailErrorMessage.set('')
+            this.emailErrorMessage.set('Email not exists')
           },
           error: (response) => {
-             console.log(response);
-             const message = response.data;
-             console.log(message);
-             this.form.get('email')?.setErrors({duplicateEmail: true}) 
+            console.log(response);
+            const message = response.data;
+            console.log("Email not OK",message);
+            // this.form.get('email')?.setErrors({dublicateEmail: true})
+            this.emailErrorMessage.set('Email exists')
           }
         })
     }
+  }
+
+  registerAnother(){
+    this.form.reset()
+    this.registrationStatus = {success:false, message: "Not attempted yet"}
   }
 }
