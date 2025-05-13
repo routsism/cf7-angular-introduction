@@ -26,7 +26,7 @@ import { User } from 'src/app/shared/interfaces/user';
 export class UserRegistrationComponent {
   userService = inject(UserService)
 
-  emailErrorMessage = signal('');
+ 
 
   registrationStatus: {success: boolean, message: string} = {
     success: false,
@@ -93,11 +93,7 @@ export class UserRegistrationComponent {
   check_dublicate_email(){
     const email = this.form.get("email")?.value;
 
-    if (this.form.controls.email.hasError('required')){
-      this.emailErrorMessage.set('Email is required')
-    } else if (this.form.controls.email.hasError('email')){
-      this.emailErrorMessage.set('Email not valid')
-    }
+   
 
     if (email){
       console.log("email", email);
@@ -105,16 +101,13 @@ export class UserRegistrationComponent {
         .subscribe({
           next: (response) => {
             console.log("Email OK",response);
-            // this.form.get("email")?.setErrors(null)
-            // this.emailErrorMessage.set('')
-            this.emailErrorMessage.set('Email not exists')
+            this.form.get("email")?.setErrors(null)
           },
           error: (response) => {
             console.log(response);
             const message = response.data;
             console.log("Email not OK",message);
-            // this.form.get('email')?.setErrors({dublicateEmail: true})
-            this.emailErrorMessage.set('Email exists')
+            this.form.get('email')?.setErrors({dublicateEmail: true})
           }
         })
     }
