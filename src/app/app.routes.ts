@@ -13,6 +13,7 @@ import { UserLoginComponent } from './components/user-login/user-login.component
 
 //GUARDS
 import { authGuard } from './shared/guards/auth.guard';
+import { adminRoleGuard } from './shared/guards/admin-role.guard';
 
 export const routes: Routes = [
   { path: 'for-directive-example', component: ForDirectiveExampleComponent },
@@ -26,7 +27,7 @@ export const routes: Routes = [
   {
     path: 'user-registration-example',
     component: UserRegistrationComponent,
-    canActivate: [authGuard]
+    canActivate: [authGuard, adminRoleGuard]
   },
   { path: 'login', component: UserLoginComponent},
   { path: 'welcome', component: WelcomeComponent},
