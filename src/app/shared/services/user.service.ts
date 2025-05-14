@@ -4,7 +4,7 @@ import { environment } from 'src/environments/environment.development';
 import { User , Credentials, LoggedInUser } from '../interfaces/user';
 import { Router } from '@angular/router';
 import { jwtDecode } from 'jwt-decode';
-import { PARENT_OR_NEW_INLINE_MENU_STACK_PROVIDER } from '@angular/cdk/menu';
+
 
 
 const API_URL = `${environment.apiURL}/api/users`
@@ -20,6 +20,15 @@ export class UserService {
   user$ = signal<LoggedInUser | null>(null)
 
   constructor() {
+    const access_token = localStorage.getItem("access_token");
+    if (access_token) {
+      const decodedTokenSubject = jwtDecode(access_token) as unknown as LoggedInUser
+      this.user$.set({
+        username: decodedTokenSubject.username,
+        email: decodedTokenSubject.email,
+        roles: decodedTokenSubject.roles
+      })
+    }
     effect(() => {
       if (this.user$()) {
         console.log("User Logged In", this.user$()?.username);
@@ -69,4 +78,17 @@ export class UserService {
     }
 
   } 
+  redirectToGoogleLogin() {
+    const clientId = '49291455257-p295u853vt861qredqvkvg24m29req43.apps.googleusercontent.com'
+    const redirectUri = 'http://localhost:3000/api/auth/google/callback'
+    const scope = 'email profile'
+    const responseType = 'code'
+    const accessType = 'offline'
+
+    const url = `https://accounts.google.com/o/oauth2/auth?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=${responseType}&scope=${scope}&access_type=${accessType}`
+
+    window.location.href = url;
+  }
 }
+
+
